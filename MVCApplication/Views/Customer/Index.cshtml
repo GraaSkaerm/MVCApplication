@@ -1,0 +1,66 @@
+﻿@model IEnumerable<MVCApplication.Models.Customer>
+
+@{
+    ViewData["Title"] = "SalesPeople";
+}
+
+<h1>SalesPeople</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson.ZipCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalesPerson.HireDate)
+            </th>
+              <th>
+                Amount of orders
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesPerson.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesPerson.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesPerson.City)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesPerson.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesPerson.ZipCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesPerson.HireDate)
+            </td>
+               <td>
+                @Html.DisplayFor(modelItem => item.Orders.Count)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { personID = item.SalesPerson.Id }) |
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
