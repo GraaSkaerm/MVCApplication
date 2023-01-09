@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MVCApplication.Extensions;
 using MVCApplication.Models;
 
 namespace MVCApplication.Controllers
@@ -27,12 +28,16 @@ namespace MVCApplication.Controllers
             List<Order> allOrders = _customerClient.RequestOrders();
             List<SalesPerson> salesPeople = _customerClient.RequestSalesPeople();
 
+
+
+
             List<Customer> customers = new List<Customer>();
 
             Parallel.For(0, salesPeople.Count, (personIndex) =>
             {
                 SalesPerson person = salesPeople[personIndex];
-                List<Order> orders = GetAllSalesPersonOrders(allOrders, person.Id);
+                //List<Order> orders = GetAllSalesPersonOrders(allOrders, person.Id);
+                List<Order> orders = GetAllSalesPersonOrdersByBatches(allOrders, person.Id);
 
                 lock (customers)
                 {
@@ -45,6 +50,32 @@ namespace MVCApplication.Controllers
             return customers;
         }
 
+        // New example
+        private List<Order> GetAllSalesPersonOrdersByBatches(List<Order> orders, int salesPersonId)
+        {
+            List<Order>[] batches = BatchExtension.CreatBatches<Order>(orders, 50);
+
+            int amountOfBatches = batches.Length;
+            List<Order>[] allSalesPeoplesOrders = new List<Order>[amountOfBatches];
+
+
+            Parallel.For(0, amountOfBatches, (batchIndex) =>
+            {
+                List<Order> batch = batches[batchIndex];
+                allSalesPeoplesOrders[batchIndex] = GetAllSalesPersonOrders(batch, salesPersonId);
+            });
+
+
+            List<Order> salesPersonsOrders = new List<Order>();
+
+            foreach (var batch in allSalesPeoplesOrders)
+            {
+                salesPersonsOrders.AddRange(batch);
+            }
+
+
+            return salesPersonsOrders;
+        }
 
         private List<Order> GetAllSalesPersonOrders(List<Order> orders, int salesPersonId)
         {
